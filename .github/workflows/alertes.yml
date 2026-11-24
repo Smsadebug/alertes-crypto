@@ -1,0 +1,22 @@
+name: Alertes crypto
+
+on:
+  schedule:
+    - cron: "3 * * * *"   # toutes les heures, juste apres la cloture de la bougie horaire
+  workflow_dispatch:       # bouton "Run workflow" pour tester a la main
+
+jobs:
+  verifier:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Verifier les signaux
+        env:
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          CAPITAL_EUR: ${{ secrets.CAPITAL_EUR }}
+        run: python alertes_crypto.py --status && python alertes_crypto.py --once
